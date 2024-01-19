@@ -3,19 +3,66 @@
 <head>
     <title>Canvas Drawing</title>
     <style>
-        #drawingCanvas {
-            border: 1px solid #000000;
-            width: 280px;
-            height: 280px;
-            image-rendering: pixelated;
-        }
+		#main {
+			text-align: center; /* 水平居中内部的块级元素 */
+		}
+
+		#draw-div {
+			display: inline-flex; /* 使用 inline-flex 使 div 作为内联元素居中 */
+			justify-content: center;
+			align-items: center;
+		}
+
+		#drawingCanvas {
+			border: 1px solid #000000;
+			width: 280px;
+			height: 280px;
+			image-rendering: pixelated;
+			margin-right: 20px; /* 为画布和 #result-div 之间添加一些间隔 */
+		}
+
+		#result-div {
+			width: 200px;
+			height: 280px;
+			display: flex;
+			align-items: center;
+			justify-content: center; /* 添加居中对齐 */
+		}
+
+		#result-div p {
+			font-size: 200px;
+			margin: 0; /* 移除默认的段落间距 */
+		}
+
+		.btn {
+			width: 200px;
+			height: 40px;
+			margin: 20px auto; /* 在按钮上方添加间隔，并水平居中 */
+			color: white;
+			font: bold;
+			background-color: RGB(27, 149, 237);
+			border: 0;
+			cursor: pointer; /* 添加手指光标 */
+		}
+
+		.btn:hover {
+			background-color: RGB(27, 139, 247);
+		}
+
+
     </style>
 </head>
 <body>
-    <canvas id="drawingCanvas" width="28" height="28"></canvas>
-    <button id="clearBtn">Clear Canvas</button>
-    <button id="arrayBtn">Convert to Array</button>
-
+	<div id="main">
+		<div id="draw-div">
+			<canvas id="drawingCanvas" width="28" height="28"></canvas>
+			<div id='result-div'><p id="recognition"><p></div>
+		</div>
+		<div id="btn-div">
+			<button id="clearBtn" class="btn">Clear Canvas</button>
+			<button id="arrayBtn" class="btn">Recognize</button>
+		</div>
+	</div>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             const canvas = document.getElementById('drawingCanvas');
@@ -28,7 +75,7 @@
 
 			// 初始化画布背景为白色
         	function initializeCanvas() {
-            	ctx.fillStyle = 'white'; // 设置填充颜色为白色
+            	ctx.fillStyle = 'black'; // 设置填充颜色为白色
             	ctx.fillRect(0, 0, canvas.width, canvas.height); // 填充整个画布
         	}
 
@@ -58,7 +105,7 @@
 
                 ctx.lineWidth = 2;
                 ctx.lineCap = 'round';
-                ctx.strokeStyle = 'black';
+                ctx.strokeStyle = 'white';
                 ctx.globalAlpha = 1;
 
                 ctx.lineTo(pos.x, pos.y);
@@ -73,7 +120,8 @@
 
             // 清空画布按钮
             document.getElementById('clearBtn').addEventListener('click', () => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+				initializeCanvas();
+				document.getElementById('recognition').innerHTML = '';
             });
 
             // 转换为数组按钮
@@ -87,15 +135,17 @@
                 console.log(arr);
 
 				fetch('http://127.0.0.1:5000/reg', {
-				  method: 'POST', // 或 'PUT'
+				  method: 'POST',
 				  headers: {
 				    'Content-Type': 'application/json',
-					'Access-Control-Allow-Origin': '*',
   				  },
 				  body: JSON.stringify({'bs': arr}), 
 				})
 					.then(response => response.json())
-					.then(data => console.log('Success:', data))
+					.then(respJson => {
+						const resultBox = document.getElementById('recognition');
+						resultBox.innerHTML = respJson.evaluated;
+					})
 					.catch((error) => console.error('Error:', error));
 
             });

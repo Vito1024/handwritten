@@ -1,6 +1,14 @@
 from flask import Flask, jsonify, request, render_template
 import torch
 
+from LeNet import LeNet, device
+
+
+model = LeNet()
+model.load_state_dict(
+    torch.load('./handwritten.model', map_location=torch.device(device))
+)
+model.eval()
 
 app = Flask(__name__, template_folder='./')
 
@@ -12,11 +20,12 @@ def index():
 def reg():
     
     json = request.get_json()
-
     bs = json['bs']
-    img = torch.tensor(bs).reshape(28, 28)
 
-    response = jsonify({'image': img.shape})
+    img = torch.tensor(bs, dtype=torch.float).reshape(1, 1, 28, 28)
+    evaluated = model(img).argmax(dim=1).item()
+
+    response = jsonify({'evaluated': evaluated})
     return response
 
 
