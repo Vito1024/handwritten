@@ -81,4 +81,4 @@ if __name__ == '__main__':
         print('accuracy:', right/(right+wrong))
     evaluate()
 
-    # torch.save(net.state_dict(), './model')
+    torch.save(net.state_dict(), './model')

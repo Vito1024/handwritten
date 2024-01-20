@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Canvas Drawing</title>
-    <style>
+	<title>Canvas Drawing</title>
+	<style>
 		#main {
-			text-align: center; /* 水平居中内部的块级元素 */
+			text-align: center;
+			/* 水平居中内部的块级元素 */
 		}
 
 		#draw-div {
-			display: inline-flex; /* 使用 inline-flex 使 div 作为内联元素居中 */
+			display: inline-flex;
+			/* 使用 inline-flex 使 div 作为内联元素居中 */
 			justify-content: center;
 			align-items: center;
 		}
@@ -18,7 +21,8 @@
 			width: 280px;
 			height: 280px;
 			image-rendering: pixelated;
-			margin-right: 20px; /* 为画布和 #result-div 之间添加一些间隔 */
+			margin-right: 20px;
+			/* 为画布和 #result-div 之间添加一些间隔 */
 		}
 
 		#result-div {
@@ -26,120 +30,126 @@
 			height: 280px;
 			display: flex;
 			align-items: center;
-			justify-content: center; /* 添加居中对齐 */
+			justify-content: center;
+			/* 添加居中对齐 */
 		}
 
 		#result-div p {
 			font-size: 200px;
-			margin: 0; /* 移除默认的段落间距 */
+			margin: 0;
+			/* 移除默认的段落间距 */
 		}
 
 		.btn {
 			width: 200px;
 			height: 40px;
-			margin: 20px auto; /* 在按钮上方添加间隔，并水平居中 */
+			margin: 20px auto;
+			/* 在按钮上方添加间隔，并水平居中 */
 			color: white;
 			font: bold;
 			background-color: RGB(27, 149, 237);
 			border: 0;
-			cursor: pointer; /* 添加手指光标 */
+			cursor: pointer;
+			/* 添加手指光标 */
 		}
 
 		.btn:hover {
 			background-color: RGB(27, 139, 247);
 		}
-
-
-    </style>
+	</style>
 </head>
+
 <body>
 	<div id="main">
 		<div id="draw-div">
 			<canvas id="drawingCanvas" width="28" height="28"></canvas>
-			<div id='result-div'><p id="recognition"><p></div>
+			<div id='result-div'>
+				<p id="recognition">
+				<p>
+			</div>
 		</div>
 		<div id="btn-div">
 			<button id="clearBtn" class="btn">Clear Canvas</button>
 			<button id="arrayBtn" class="btn">Recognize</button>
 		</div>
 	</div>
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const canvas = document.getElementById('drawingCanvas');
-            const ctx = canvas.getContext('2d');
-            const scale = 10;
-            canvas.style.width = scale * 28 + 'px';
-            canvas.style.height = scale * 28 + 'px';
+	<script>
+		document.addEventListener('DOMContentLoaded', (event) => {
+			const canvas = document.getElementById('drawingCanvas');
+			const ctx = canvas.getContext('2d');
+			const scale = 10;
+			canvas.style.width = scale * 28 + 'px';
+			canvas.style.height = scale * 28 + 'px';
 
-            let painting = false;
+			let painting = false;
 
 			// 初始化画布背景为白色
-        	function initializeCanvas() {
-            	ctx.fillStyle = 'black'; // 设置填充颜色为白色
-            	ctx.fillRect(0, 0, canvas.width, canvas.height); // 填充整个画布
-        	}
+			function initializeCanvas() {
+				ctx.fillStyle = 'black'; // 设置填充颜色为白色
+				ctx.fillRect(0, 0, canvas.width, canvas.height); // 填充整个画布
+			}
 
-        	initializeCanvas(); // 初始化画布
+			initializeCanvas(); // 初始化画布
 
-            function startPosition(e) {
-                painting = true;
-                draw(e);
-            }
+			function startPosition(e) {
+				painting = true;
+				draw(e);
+			}
 
-            function endPosition() {
-                painting = false;
-                ctx.beginPath();
-            }
+			function endPosition() {
+				painting = false;
+				ctx.beginPath();
+			}
 
-            function getMousePos(canvas, e) {
-                var rect = canvas.getBoundingClientRect();
-                return {
-                    x: (e.clientX - rect.left) / scale,
-                    y: (e.clientY - rect.top) / scale
-                };
-            }
+			function getMousePos(canvas, e) {
+				var rect = canvas.getBoundingClientRect();
+				return {
+					x: (e.clientX - rect.left) / scale,
+					y: (e.clientY - rect.top) / scale
+				};
+			}
 
-            function draw(e) {
-                if (!painting) return;
-                var pos = getMousePos(canvas, e);
+			function draw(e) {
+				if (!painting) return;
+				var pos = getMousePos(canvas, e);
 
-                ctx.lineWidth = 2;
-                ctx.lineCap = 'round';
-                ctx.strokeStyle = 'white';
-                ctx.globalAlpha = 1;
+				ctx.lineWidth = 2;
+				ctx.lineCap = 'round';
+				ctx.strokeStyle = 'white';
+				ctx.globalAlpha = 1;
 
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(pos.x, pos.y);
-            }
+				ctx.lineTo(pos.x, pos.y);
+				ctx.stroke();
+				ctx.beginPath();
+				ctx.moveTo(pos.x, pos.y);
+			}
 
-            canvas.addEventListener('mousedown', startPosition);
-            canvas.addEventListener('mouseup', endPosition);
-            canvas.addEventListener('mousemove', draw);
+			canvas.addEventListener('mousedown', startPosition);
+			canvas.addEventListener('mouseup', endPosition);
+			canvas.addEventListener('mousemove', draw);
 
-            // 清空画布按钮
-            document.getElementById('clearBtn').addEventListener('click', () => {
+			// 清空画布按钮
+			document.getElementById('clearBtn').addEventListener('click', () => {
 				initializeCanvas();
 				document.getElementById('recognition').innerHTML = '';
-            });
+			});
 
-            // 转换为数组按钮
-            document.getElementById('arrayBtn').addEventListener('click', () => {
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data = imageData.data;
-                let arr = [];
-                for (let i = 0; i < data.length; i += 4) {
-                    arr.push(data[i]); // 取红色通道
-                }
-                console.log(arr);
+			// 转换为数组按钮
+			document.getElementById('arrayBtn').addEventListener('click', () => {
+				const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+				const data = imageData.data;
+				let arr = [];
+				for (let i = 0; i < data.length; i += 4) {
+					arr.push(data[i]); // 取红色通道
+				}
+				console.log(arr);
 
 				fetch('http://127.0.0.1:5000/reg', {
-				  method: 'POST',
-				  headers: {
-				    'Content-Type': 'application/json',
-  				  },
-				  body: JSON.stringify({'bs': arr}), 
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ 'bs': arr }),
 				})
 					.then(response => response.json())
 					.then(respJson => {
@@ -148,8 +158,9 @@
 					})
 					.catch((error) => console.error('Error:', error));
 
-            });
-        });
-    </script>
+			});
+		});
+	</script>
 </body>
+
 </html>

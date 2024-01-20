@@ -10,6 +10,7 @@ model.load_state_dict(
 )
 model.eval()
 
+
 app = Flask(__name__, template_folder='./')
 
 @app.route("/")
@@ -18,7 +19,6 @@ def index():
 
 @app.route("/reg", methods=['POST'])
 def reg():
-    
     json = request.get_json()
     bs = json['bs']
 
